@@ -20,6 +20,7 @@ import hashlib
 import hmac
 import inspect
 import json
+import encode
 
 from .exceptions import InvalidSignatureError
 from .webhooks import (
