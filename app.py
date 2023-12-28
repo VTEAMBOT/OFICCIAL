@@ -94,8 +94,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app.logger.setLevel(logging.INFO)
 channel_secret = os.getenv('c1a32bb792d33105b21b0e4ffeea680f')
 handler = WebhookHandler('c1a32bb792d33105b21b0e4ffeea680f')
-Xeberlhyn = MessagingApi(ApiClient(Configuration(access_token=os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU='))))
-
+channel_access_token = os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=')
+configuration = Configuration(access_token=channel_access_token)
+Xeberlhyn = MessagingApi(ApiClient(configuration))
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 chanels = Xeberlhyn.get_bot_info()
 BotMID = chanels.user_id
