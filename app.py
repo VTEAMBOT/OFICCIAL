@@ -108,7 +108,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app.logger.setLevel(logging.INFO)
 
 
-channel_secret = os.getenv('8657b791ece867b207b84c2a2f64e255', None)
+channel_secret = os.getenv('dc352c9b541f3738910582b03ed6759e', None)
 channel_access_token = os.getenv('zzwpZ9XQOC0DxzCCT3Wz40EnMqGSK1P7/aU8YsMFxwh2OXBQcqtgR+q0wC0SxdTuzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XlLuaHzcmFEm2ltgWQfN6WZ6lTTiYkZrfmqahngUqE8nwdB04t89/1O/w1cDnyilFU=', None)
 handler = WebhookHandler(channel_secret)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
