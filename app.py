@@ -108,20 +108,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app.logger.setLevel(logging.INFO)
 
 
-# get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('8657b791ece867b207b84c2a2f64e255', None)
 channel_access_token = os.getenv('zzwpZ9XQOC0DxzCCT3Wz40EnMqGSK1P7/aU8YsMFxwh2OXBQcqtgR+q0wC0SxdTuzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XlLuaHzcmFEm2ltgWQfN6WZ6lTTiYkZrfmqahngUqE8nwdB04t89/1O/w1cDnyilFU=', None)
-if channel_secret is None or channel_access_token is None:
-    print('Specify LINE_CHANNEL_SECRET and LINE_CHANNEL_ACCESS_TOKEN as environment variables.')
-    sys.exit(1)
-
 handler = WebhookHandler(channel_secret)
-
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-
-configuration = Configuration(
-    access_token=channel_access_token
-)
+configuration = Configuration(access_token=channel_access_token)
 
 
 # function for create tmp dir for download content
