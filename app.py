@@ -94,6 +94,7 @@ from linebot.v3.messaging import (
     CameraAction,
     CameraRollAction,
     LocationAction,
+    ErrorResponse
 )
 
 from linebot.v3.insight import (
@@ -109,8 +110,8 @@ app.logger.setLevel(logging.INFO)
 
 
 # get channel_secret and channel_access_token from your environment variable
-channel_secret = os.getenv('dc352c9b541f3738910582b03ed6759e', None)
-channel_access_token = os.getenv('zzwpZ9XQOC0DxzCCT3Wz40EnMqGSK1P7/aU8YsMFxwh2OXBQcqtgR+q0wC0SxdTuzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XlLuaHzcmFEm2ltgWQfN6WZ6lTTiYkZrfmqahngUqE8nwdB04t89/1O/w1cDnyilFU=', None)
+channel_secret = os.getenv('c1a32bb792d33105b21b0e4ffeea680f', None)
+channel_access_token = os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=', None)
 if channel_secret is None or channel_access_token is None:
     print('Specify LINE_CHANNEL_SECRET and LINE_CHANNEL_ACCESS_TOKEN as environment variables.')
     sys.exit(1)
@@ -698,6 +699,28 @@ def handle_text_message(event):
                     messages=messages
                 )
             )
+        elif text == 'with http info':
+            response = line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text='see application log')]
+                )
+            )
+            app.logger.info("Got response with http status code: " + str(response.status_code))
+            app.logger.info("Got x-line-request-id: " + response.headers['x-line-request-id'])
+            app.logger.info("Got response with http body: " + str(response.data))
+        elif text == 'with http info error':
+            try:
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token='invalid-reply-token',
+                        messages=[TextMessage(text='see application log')]
+                    )
+                )
+            except ApiException as e:
+                app.logger.info("Got response with http status code: " + str(e.status))
+                app.logger.info("Got x-line-request-id: " + e.headers['x-line-request-id'])
+                app.logger.info("Got response with http body: " + str(ErrorResponse.from_json(e.body)))
         else:
             line_bot_api.reply_message(
                 ReplyMessageRequest(
