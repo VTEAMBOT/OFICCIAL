@@ -98,58 +98,7 @@ channel_secret = os.getenv('c1a32bb792d33105b21b0e4ffeea680f')
 handler = WebhookHandler('c1a32bb792d33105b21b0e4ffeea680f')
 channel_access_token = os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=')
 configuration = Configuration(access_token=channel_access_token)
-Xeberlhyn = MessagingApi(ApiClient(configuration))
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-chanels = Xeberlhyn.get_bot_info()
-BotMID = chanels.user_id
-Creator = 'u7b53d142b0b84803853f8841e48cba82'
-
-
-
-def sendMessage(to, teks):
-    return Xeberlhyn.reply_message(to, TextSendMessage(text=teks))
-
-def sendImage(to, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, ImageSendMessage(url, url))
-
-def sendAudio(to, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, AudioSendMessage(url, 60000))
-
-def sendVideo(to, url):
-    app.logger.info("url=" + url)
-    preview = "https://i.ibb.co/wrJNNGL/20220219-100319.jpg"
-    return Xeberlhyn.reply_message(to, VideoSendMessage(url, preview))
-
-def sendTextImageURL(to, teks, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, [TextSendMessage(text=teks), ImageSendMessage(url, url)])
-
-def sendTextAudioURL(to, teks, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, [TextSendMessage(text=teks), AudioSendMessage(url, 60000)])
-
-def sendTextVideoURL(to, teks, url):
-    app.logger.info("url=" + url)
-    preview = "https://i.ibb.co/wrJNNGL/20220219-100319.jpg"
-    return Xeberlhyn.reply_message(to, [TextSendMessage(text=teks), VideoSendMessage(url, preview)])
-
-def sendFlexVideoURL(to, data, url):
-    app.logger.info("url=" + url)
-    preview = "https://i.ibb.co/wrJNNGL/20220219-100319.jpg"
-    return Xeberlhyn.reply_message(to, [FlexSendMessage(alt_text="©VTEAM-OFFICIAL", contents=data), VideoSendMessage(url, preview)])
-
-def sendFlexAudioURL(to, data, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, [FlexSendMessage(alt_text="©VTEAM-OFFICIAL", contents=data), VideoSendMessage(url, 60000)])
-
-def sendFlexImageURL(to, data, url):
-    app.logger.info("url=" + url)
-    return Xeberlhyn.reply_message(to, [FlexSendMessage(alt_text="©VTEAM-OFFICIAL", contents=data), VideoSendMessage(url, url)])
-
-def sendDowbleMessage(to, txt1, txt2):
-    return Xeberlhyn.reply_message(to, [TextSendMessage(text=txt1), TextSendMessage(text=txt2)])
 
 
 
@@ -162,9 +111,26 @@ def make_static_tmp_dir():
         else:
             raise
 
+@app.route("/callback", methods=['POST'])
+def callback():
+    signature = request.headers['X-Line-Signature']
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    try:
+        handler.handle(body, signature)
+    except LineBotApiError as e:
+        print("Got exception from LINE Messaging API: %s\n" % e.message)
+        for m in e.error.details:
+            print("  %s: %s" % (m.property, m.message))
+        print("\n")
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
+
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
+    Xeberlhyn = MessagingApi(ApiClient(configuration))
     tks = str(event.message.text)
     VinsenT = tks.lower()
     sender = event.source.user_id
@@ -173,7 +139,6 @@ def handle_text_message(event):
     room = event.source.group_id
     if VinsenT == '!my profile':
         profile = Xeberlhyn.get_profile(sender)
-        url = profile.picture_url
         c_ = "╭───「 Costumer service」"
         c_ += "\n│⊧≽ Nama : " + profile.display_name
         c_ += "\n│⊧≽ Status : " + str(profile.status_message)
@@ -183,6 +148,14 @@ def handle_text_message(event):
         c_ += "\n│╰──────────────"
         c_ += "\n╰───「 By: ©VinsenTEAM 」"
         sendTextImageURL(to, str(c_), str(url))
+        Xeberlhyn.reply_message(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=str(c_))]
+                    )
+                )
+
+
 
 
 @handler.add(MemberLeftEvent)
@@ -200,21 +173,7 @@ def send_static_content(path):
 
 
 
-@app.route("/callback", methods=['POST'])
-def callback():
-    signature = request.headers['X-Line-Signature']
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-    try:
-        handler.handle(body, signature)
-    except LineBotApiError as e:
-        print("Got exception from LINE Messaging API: %s\n" % e.message)
-        for m in e.error.details:
-            print("  %s: %s" % (m.property, m.message))
-        print("\n")
-    except InvalidSignatureError:
-        abort(400)
-    return 'OK'
+
 if __name__ == "__main__":
     arg_parser = ArgumentParser(
         usage='Usage: python ' + __file__ + ' [--port <port>] [--help]'
