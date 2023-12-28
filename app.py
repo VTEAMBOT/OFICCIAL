@@ -94,7 +94,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app.logger.setLevel(logging.INFO)
 
 
-channel_secret = os.getenv('6784e25383ee39debbddd38dbcd7ab1f')
 handler = WebhookHandler('6784e25383ee39debbddd38dbcd7ab1f')
 channel_access_token = os.getenv('2Qch8cY6wIMUpoDKqxoe7vhUjCKTX07Ccn+Vn5hk8A1SqMu7TcvY0ablo0DDuEnaoASRcMTNFQu3buoi7MGmrbwRFEKJdzQPHgu/i1QhxqDuJy/MaCSK0sSKqnxEUOsrb5PFZPzw0FhCweL/vmfb0QdB04t89/1O/w1cDnyilFU=')
 configuration = Configuration(access_token=channel_access_token)
@@ -110,23 +109,6 @@ def make_static_tmp_dir():
             pass
         else:
             raise
-
-@app.route("/callback", methods=['POST'])
-def callback():
-    signature = request.headers['X-Line-Signature']
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-    try:
-        handler.handle(body, signature)
-    except LineBotApiError as e:
-        print("Got exception from LINE Messaging API: %s\n" % e.message)
-        for m in e.error.details:
-            print("  %s: %s" % (m.property, m.message))
-        print("\n")
-    except InvalidSignatureError:
-        abort(400)
-    return 'OK'
-
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
@@ -147,7 +129,6 @@ def handle_text_message(event):
         c_ += "\n││• hello dear, ini data profile mu"
         c_ += "\n│╰──────────────"
         c_ += "\n╰───「 By: ©VinsenTEAM 」"
-        sendTextImageURL(to, str(c_), str(url))
         Xeberlhyn.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
@@ -172,6 +153,22 @@ def send_static_content(path):
     return send_from_directory('static', path)
 
 
+
+@app.route("/callback", methods=['POST'])
+def callback():
+    signature = request.headers['X-Line-Signature']
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    try:
+        handler.handle(body, signature)
+    except LineBotApiError as e:
+        print("Got exception from LINE Messaging API: %s\n" % e.message)
+        for m in e.error.details:
+            print("  %s: %s" % (m.property, m.message))
+        print("\n")
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
 
 
 if __name__ == "__main__":
