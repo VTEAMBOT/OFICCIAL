@@ -112,7 +112,7 @@ app.logger.setLevel(logging.INFO)
 # get channel_secret and channel_access_token from your environment variable
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('c1a32bb792d33105b21b0e4ffeea680f')
-channel_access_token = os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=)
+channel_access_token = os.getenv('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('c1a32bb792d33105b21b0e4ffeea680f')
 configuration = Configuration(access_token=channel_access_token)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
