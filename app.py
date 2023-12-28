@@ -92,8 +92,8 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 app.logger.setLevel(logging.INFO)
-handler = WebhookHandler('6784e25383ee39debbddd38dbcd7ab1f')
-Xeberlhyn = MessagingApi(ApiClient(Configuration("2Qch8cY6wIMUpoDKqxoe7vhUjCKTX07Ccn+Vn5hk8A1SqMu7TcvY0ablo0DDuEnaoASRcMTNFQu3buoi7MGmrbwRFEKJdzQPHgu/i1QhxqDuJy/MaCSK0sSKqnxEUOsrb5PFZPzw0FhCweL/vmfb0QdB04t89/1O/w1cDnyilFU=")))
+handler = WebhookHandler('c1a32bb792d33105b21b0e4ffeea680f')
+Xeberlhyn = MessagingApi(ApiClient(Configuration("9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=")))
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 chanels = Xeberlhyn.get_bot_info()
 BotMID = chanels.user_id
@@ -159,20 +159,6 @@ def make_static_tmp_dir():
             raise
 
 
-@app.route("/callback", methods=['POST'])
-def callback():
-    signature = request.headers['X-Line-Signature']
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-    try:
-        handler.handle(body, signature)
-    except ApiException as e:
-        app.logger.warn("Got exception from LINE Messaging API: %s\n" % e.body)
-    except InvalidSignatureError:
-        abort(400)
-    return 'OK'
-
-
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     tks = str(event.message.text)
@@ -209,12 +195,22 @@ def send_static_content(path):
     return send_from_directory('static', path)
 
 
+
+@app.route("/callback", methods=['POST'])
+def callback():
+    signature = request.headers['X-Line-Signature']
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    try:
+        handler.handle(body, signature)
+    except LineBotApiError as e:
+        print("Got exception from LINE Messaging API: %s\n" % e.message)
+        for m in e.error.details:
+            print("  %s: %s" % (m.property, m.message))
+        print("\n")
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
 if __name__ == "__main__":
-    arg_parser = ArgumentParser(
-        usage='Usage: python ' + __file__ + ' [--port <port>] [--help]'
-    )
-    arg_parser.add_argument('-p', '--port', type=int, default=8000, help='port')
-    arg_parser.add_argument('-d', '--debug', default=False, help='debug')
-    options = arg_parser.parse_args()
-    make_static_tmp_dir()
-    app.run(debug=options.debug, port=options.port)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)ort)
