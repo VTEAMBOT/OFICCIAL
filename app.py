@@ -13,7 +13,7 @@ from linebot.v3 import (
     WebhookHandler
 )
 from linebot.v3.models import (
-    UnknownEvent
+    UnknownEvent,TextSendMessage
 )
 from linebot.v3.exceptions import (
     InvalidSignatureError
@@ -94,7 +94,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app.logger.setLevel(logging.INFO)
 
 channel_secret = ('c1a32bb792d33105b21b0e4ffeea680f')
-
 channel_access_token = ('9JbP+PRmPFu1AU5s2cMeUCRiD0H/WTg+1G6N0iqQtmwbyqo8t44wTKJIhfr2DOqEzfzrQ1UpI2tIG0NnV3AWbiL/o1mDV0w6vCHb2tSv8XkASczwcYa6vM46Dr1aBrOIYyCmxQEgJHfRR35g3PHBbwdB04t89/1O/w1cDnyilFU=')
 
 handler = WebhookHandler(channel_secret)
@@ -113,7 +112,7 @@ def make_static_tmp_dir():
         else:
             raise
 
-@handler.add(MessageEvent, message=TextMessageContent)
+@handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     Xeberlhyn = MessagingApi(ApiClient(configuration))
     tks = str(event.message.text)
@@ -123,12 +122,7 @@ def handle_text_message(event):
     to = event.reply_token
     room = event.source.group_id
     if VinsenT == 'ping':
-        Xeberlhyn.reply_message(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text="KONTOLL SEKALI")]
-                    )
-                )
+        Xeberlhyn.reply_message(to, TextSendMessage(text="KONTOL KAU"))
 
 
 #______________________________________________________________
