@@ -125,19 +125,10 @@ def handle_text_message(event):
     to = event.reply_token
     room = event.source.group_id
     if VinsenT == 'ping':
-        profile = Xeberlhyn.get_profile(sender)
-        c_ = "╭───「 Costumer service」"
-        c_ += "\n│⊧≽ Nama : " + profile.display_name
-        c_ += "\n│⊧≽ Status : " + str(profile.status_message)
-        c_ += "\n│⊧≽ Mid : " + sender
-        c_ += "\n│╭───「 message」"
-        c_ += "\n││• hello dear, ini data profile mu"
-        c_ += "\n│╰──────────────"
-        c_ += "\n╰───「 By: ©VinsenTEAM 」"
         Xeberlhyn.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[TextMessage(text=str(c_))]
+                        messages=[TextMessage(text="KONTOLL SEKALI")]
                     )
                 )
 
