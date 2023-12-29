@@ -93,11 +93,16 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 app.logger.setLevel(logging.INFO)
 
+channel_secret = os.getenv('6784e25383ee39debbddd38dbcd7ab1f', None)
+channel_access_token = os.getenv('2Qch8cY6wIMUpoDKqxoe7vhUjCKTX07Ccn+Vn5hk8A1SqMu7TcvY0ablo0DDuEnaoASRcMTNFQu3buoi7MGmrbwRFEKJdzQPHgu/i1QhxqDuJy/MaCSK0sSKqnxEUOsrb5PFZPzw0FhCweL/vmfb0QdB04t89/1O/w1cDnyilFU=', None)
+if channel_secret is None or channel_access_token is None:
+    print('Specify LINE_CHANNEL_SECRET and LINE_CHANNEL_ACCESS_TOKEN as environment variables.')
+    sys.exit(1)
 
-handler = WebhookHandler('6784e25383ee39debbddd38dbcd7ab1f')
-channel_access_token = os.getenv('2Qch8cY6wIMUpoDKqxoe7vhUjCKTX07Ccn+Vn5hk8A1SqMu7TcvY0ablo0DDuEnaoASRcMTNFQu3buoi7MGmrbwRFEKJdzQPHgu/i1QhxqDuJy/MaCSK0sSKqnxEUOsrb5PFZPzw0FhCweL/vmfb0QdB04t89/1O/w1cDnyilFU=')
-configuration = Configuration(access_token=channel_access_token)
+handler = WebhookHandler(channel_secret)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
+configuration = Configuration(access_token=channel_access_token)
+
 
 
 
@@ -119,7 +124,7 @@ def handle_text_message(event):
     msg_id = event.message.id
     to = event.reply_token
     room = event.source.group_id
-    if VinsenT == '!my profile':
+    if VinsenT == 'ping':
         profile = Xeberlhyn.get_profile(sender)
         c_ = "╭───「 Costumer service」"
         c_ += "\n│⊧≽ Nama : " + profile.display_name
@@ -137,23 +142,7 @@ def handle_text_message(event):
                 )
 
 
-
-
-@handler.add(MemberLeftEvent)
-def handle_member_left(event):
-    app.logger.info("Got memberLeft event")
-
-
-@handler.add(UnknownEvent)
-def handle_unknown_left(event):
-    app.logger.info(f"unknown event {event}")
-
-@app.route('/static/<path:path>')
-def send_static_content(path):
-    return send_from_directory('static', path)
-
-
-
+#______________________________________________________________
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -169,17 +158,10 @@ def callback():
     except InvalidSignatureError:
         abort(400)
     return 'OK'
-
-
 if __name__ == "__main__":
-    arg_parser = ArgumentParser(
-        usage='Usage: python ' + __file__ + ' [--port <port>] [--help]'
-    )
+    arg_parser = ArgumentParser(usage='Usage: python ' + __file__ + ' [--port <port>] [--help]')
     arg_parser.add_argument('-p', '--port', type=int, default=8000, help='port')
     arg_parser.add_argument('-d', '--debug', default=False, help='debug')
     options = arg_parser.parse_args()
-
-    # create tmp dir for download content
     make_static_tmp_dir()
-
     app.run(debug=options.debug, port=options.port)
