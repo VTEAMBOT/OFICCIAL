@@ -13,8 +13,14 @@ from linebot.v3 import (
     WebhookHandler
 )
 from linebot.v3.models import (
-    UnknownEvent,TextSendMessage
+    UnknownEvent
 )
+
+from linebot.models import (
+    TextSendMessage
+)
+
+
 from linebot.v3.exceptions import (
     InvalidSignatureError
 )
